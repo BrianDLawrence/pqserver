@@ -20,8 +20,9 @@ const startApolloServer = async (app, httpServer) => {
         plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     });
 
+
     await server.start();
-    server.applyMiddleware({ app });
+    server.applyMiddleware({ app, path: '/' });
 }
 
 startApolloServer(app, httpServer);
