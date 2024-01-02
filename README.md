@@ -26,6 +26,13 @@ Currently hosted on vercel here: https://pqserver.vercel.app/
         }
     }
 
+    query Query {
+        getQuestionsByQuestionType(questionType: Outcome) {
+        coachingModel
+        question
+        }
+    }
+
 ```
 
 
@@ -42,6 +49,11 @@ Returns the last question saved to the Powerful Questions database
 ### getQuestionsByCoachingModel(coachingModel:GROW or TOMS, limit:n) 
 
 Returns an array of questions by the coachingModel - coachingModel is an ENUM that can be either GROW or TOMS
+optional limit - default is set to 100
+
+### getQuestionsByQuestionType(questionType:[Goal,Reality,Options,Will,Topic,Outcome,Meaning,Success], limit:n) 
+
+Returns an array of questions by the coaching Type. The questionType is ENUM that can be any of the above values
 optional limit - default is set to 100
 
 ## License

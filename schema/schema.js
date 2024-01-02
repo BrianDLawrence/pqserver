@@ -38,6 +38,10 @@ type Query {
     Gets questions by the coaching Model type with optional limit (default is 100)
     """
     getQuestionsByCoachingModel(coachingModel: COACHING_MODEL!, limit: Int): [Questions]
+    """
+    Gets questions by the coaching Question type with optional limit (default is 100)
+    """
+    getQuestionsByQuestionType(questionType: QUESTION_TYPE!, limit: Int): [Questions]
 }`;
 
 export default typeDefs;

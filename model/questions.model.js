@@ -61,7 +61,27 @@ async function getQuestionsByCoachingModel(coachingModel, limit) {
     }
 }
 
-export { getTotalQuestions, getLastQuestion, getQuestionsByCoachingModel };
+async function getQuestionsByQuestionType(questionType, limit) {
+    try {
+        await client.connect();
+        const db = client.db(config.MONGO_DB);
+        const collection = db.collection("Questions");
+
+        let filterLimit = 100;
+        // Apply the limit if it's provided
+        if (typeof limit === 'number') {
+            filterLimit = limit;
+        }
+
+        const query = { questionType: questionType };
+        const matchingQuestions = await collection.find(query).limit(filterLimit).toArray();
+        return matchingQuestions;
+    } finally {
+        await client.close();
+    }
+}
+
+export { getTotalQuestions, getLastQuestion, getQuestionsByCoachingModel, getQuestionsByQuestionType };
 
 
 
