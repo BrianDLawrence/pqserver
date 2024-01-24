@@ -1,4 +1,4 @@
-import { getTotalQuestions, getLastQuestion, getQuestionsByCoachingModel, getQuestionsByQuestionType } from '../model/questions.model.js';
+import { getTotalQuestions, getLastQuestion, getQuestionsByCoachingModel, getQuestionsByQuestionType, addQuestion } from '../model/questions.model.js';
 
 const resolvers = {
     Query: {
@@ -18,6 +18,12 @@ const resolvers = {
             return questions;
         },
     },
+    Mutation: {
+        addQuestion: async (parent, args) => {
+            const result = await addQuestion(args.input)
+            return result;
+        },
+    }
 };
 
 export default resolvers;

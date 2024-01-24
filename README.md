@@ -33,29 +33,76 @@ Currently hosted on vercel here: https://pqserver.vercel.app/
         }
     }
 
+    mutation AddNewQuestion {
+        addQuestion(input: {
+            question: "What steps will you take to reach your goal?",
+            coachingModel: GROW,
+            questionType: Goal
+        }) {
+            question
+            coachingModel
+            questionType
+        }
+    }
+
 ```
 
+## API - QUERIES
 
-## API
-
-### totalQuestions
+### totalQuestions: Int!
   
 Returns the total number of questions stored in the Powerful Questions database
 
-### getLastQuestion
+### getLastQuestion: Questions
 
 Returns the last question saved to the Powerful Questions database
 
-### getQuestionsByCoachingModel(coachingModel:GROW or TOMS, limit:n) 
+### getQuestionsByCoachingModel(coachingModel: COACHING_MODEL!, limit: Int): [Questions]
 
-Returns an array of questions by the coachingModel - coachingModel is an ENUM that can be either GROW or TOMS
+Returns an array of Questions by the coachingModel
 optional limit - default is set to 100
 
-### getQuestionsByQuestionType(questionType:[Goal,Reality,Options,Will,Topic,Outcome,Meaning,Success], limit:n) 
+### getQuestionsByQuestionType(questionType: QUESTION_TYPE!, limit: Int): [Questions]
 
-Returns an array of questions by the coaching Type. The questionType is ENUM that can be any of the above values
+Returns an array of Questions by the coaching Type. 
 optional limit - default is set to 100
 
+## API - MUTATIONS
+
+###  addQuestion(input: AddQuestionInput!): Questions
+
+Add a one question to the database and returns that Question
+
+### INPUT & RESULT TYPES + ENUMS
+```gql
+    type Questions {
+        question: String!
+        coachingModel: COACHING_MODEL!
+        questionType: QUESTION_TYPE!
+    }
+
+    input AddQuestionInput {
+        question: String!
+        coachingModel: COACHING_MODEL!
+        questionType: QUESTION_TYPE!
+    }
+
+    enum COACHING_MODEL {
+        TOMS
+        GROW
+    }
+
+    enum QUESTION_TYPE {
+        Topic
+        Outcome
+        Meaning
+        Success
+        Goal
+        Reality
+        Options
+        Will
+    }
+```
 ## License
 
 The MIT License (MIT)

@@ -1,21 +1,35 @@
 import { MongoClient } from 'mongodb';
 
-const config = process.env;
+let client;
+let config;
 
-if (!(config.MONGO_URI && config.MONGO_DB)) {
-    console.error("UNDEFINED RUNTIME CONFIGURATION - NO MONGODB ENV VARIABLES")
-    throw new Error("UNDEFINED RUNTIME CONFIGURATION - NO MONGODB ENV VARIABLES");
+async function initializeDbConnection() {
+    config = process.env;
+    if (!(config.MONGO_URI && config.MONGO_DB)) {
+        console.error("UNDEFINED RUNTIME CONFIGURATION - NO MONGODB ENV VARIABLES")
+        throw new Error("UNDEFINED RUNTIME CONFIGURATION - NO MONGODB ENV VARIABLES");
+    }
+
+    client = new MongoClient(config.MONGO_URI, {
+        serverApi: {
+            version: '1', // MongoDB server API version
+            strict: true,
+            deprecationErrors: true,
+        }
+    });
+
+    try {
+        await client.connect();
+    } catch (error) {
+        console.error("Failed to connect to MongoDB", error);
+        throw error;
+    }
 }
 
-const client = new MongoClient(config.MONGO_URI, {
-    serverApi: {
-        version: '1', // MongoDB server API version
-        strict: true,
-        deprecationErrors: true,
-    }
-});
-
 async function getTotalQuestions() {
+    if (!client) {
+        await initializeDbConnection();
+    }
     try {
         await client.connect();
         const db = client.db(config.MONGO_DB);
@@ -29,6 +43,9 @@ async function getTotalQuestions() {
 }
 
 async function getLastQuestion() {
+    if (!client) {
+        await initializeDbConnection();
+    }
     try {
         await client.connect();
         const db = client.db(config.MONGO_DB);
@@ -42,6 +59,9 @@ async function getLastQuestion() {
 }
 
 async function getQuestionsByCoachingModel(coachingModel, limit) {
+    if (!client) {
+        await initializeDbConnection();
+    }
     try {
         await client.connect();
         const db = client.db(config.MONGO_DB);
@@ -62,6 +82,9 @@ async function getQuestionsByCoachingModel(coachingModel, limit) {
 }
 
 async function getQuestionsByQuestionType(questionType, limit) {
+    if (!client) {
+        await initializeDbConnection();
+    }
     try {
         await client.connect();
         const db = client.db(config.MONGO_DB);
@@ -81,7 +104,37 @@ async function getQuestionsByQuestionType(questionType, limit) {
     }
 }
 
-export { getTotalQuestions, getLastQuestion, getQuestionsByCoachingModel, getQuestionsByQuestionType };
+async function addQuestion(input) {
+    if (!client) {
+        await initializeDbConnection();
+    }
+    try {
+        await client.connect();
+        const db = client.db(config.MONGO_DB);
+        const collection = db.collection("Questions");
+
+        const newQuestion = {
+            question: input.question,
+            coachingModel: input.coachingModel,
+            questionType: input.questionType
+        };
+
+        const result = await collection.insertOne(newQuestion);
+
+        if (result.acknowledged) {
+            return {
+                ...newQuestion,
+                _id: result.insertedId
+            };
+        } else {
+            throw new Error("Failed to add the question");
+        }
+    } finally {
+        await client.close();
+    }
+}
+
+export { getTotalQuestions, getLastQuestion, getQuestionsByCoachingModel, getQuestionsByQuestionType, addQuestion };
 
 
 

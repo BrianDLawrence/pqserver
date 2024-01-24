@@ -42,6 +42,21 @@ type Query {
     Gets questions by the coaching Question type with optional limit (default is 100)
     """
     getQuestionsByQuestionType(questionType: QUESTION_TYPE!, limit: Int): [Questions]
-}`;
+}
+
+input AddQuestionInput {
+    question: String!
+    coachingModel: COACHING_MODEL!
+    questionType: QUESTION_TYPE!
+}
+
+type Mutation {
+    """
+    Adds a new question to the database.
+    """
+    addQuestion(input: AddQuestionInput!): Questions
+}
+
+`;
 
 export default typeDefs;
